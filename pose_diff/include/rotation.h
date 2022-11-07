@@ -18,20 +18,19 @@ class Rotation {
     if (AreApproximatelyEqual(matrix(2, 0), 1.0, 1e-6)) {
       rpy(1) = M_PI_2;
       rpy(2) = 0.;
-      rpy(0) = atan2(matrix(0,1), matrix(0,2));
+      rpy(0) = atan2(matrix(0, 1), matrix(0, 2));
     } else if (AreApproximatelyEqual(matrix(2, 0), -1.0, 1e-6)) {
       rpy(1) = -M_PI_2;
       rpy(2) = 0.;
-      rpy(0) = atan2(-matrix(0,1), -matrix(0,2));
+      rpy(0) = atan2(-matrix(0, 1), -matrix(0, 2));
     } else {
       rpy(1) = -asin(matrix(2, 0));
-      rpy(0) = atan2(matrix(2, 1) / cos(rpy(1)),
-                     matrix(2, 2) / cos(rpy(1)));
-      rpy(2) = atan2(matrix(1, 0) / cos(rpy(1)),
-                     matrix(0, 0) / cos(rpy(1)));
+      rpy(0) = atan2(matrix(2, 1) / cos(rpy(1)), matrix(2, 2) / cos(rpy(1)));
+      rpy(2) = atan2(matrix(1, 0) / cos(rpy(1)), matrix(0, 0) / cos(rpy(1)));
     }
     return rpy;
   }
+
  private:
   static bool IsMatrixValid(const Eigen::Matrix3d& matrix) {
     if (!(AreApproximatelyEqual(matrix.col(0).norm(), 1.0) &&
@@ -47,7 +46,8 @@ class Rotation {
     return true;
   }
 
-  static bool AreApproximatelyEqual(const double& a, const double& b, const double& maximum_diff = 1e-9) {
+  static bool AreApproximatelyEqual(const double& a, const double& b,
+                                    const double& maximum_diff = 1e-9) {
     return abs(a - b) < maximum_diff;
   }
 };

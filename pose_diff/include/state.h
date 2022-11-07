@@ -8,8 +8,9 @@
 namespace pose_diff {
 class State {
  public:
-  explicit State(const Eigen::Matrix3d& rotation_matrix, const Eigen::Vector3d& translation)
-      : translation_(translation) {
+  explicit State(const Eigen::Matrix3d& rotation_matrix,
+                 Eigen::Vector3d translation)
+      : translation_(std::move(translation)) {
     rotation_matrix_ = rotation_matrix;
   }
   explicit State(const Eigen::Matrix4d& transformation_matrix) {
@@ -23,6 +24,7 @@ class State {
     state_6d << rotationXYZ, translation_;
     return state_6d;
   };
+
  private:
   Eigen::Matrix3d rotation_matrix_;
   Eigen::Vector3d translation_;
