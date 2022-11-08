@@ -40,5 +40,11 @@ int main() {
 
   print_vector(state_6d_with_noise);
 
+  Eigen::Vector3d rot_vector = state_6d.head(3);
+  Eigen::Matrix3d conversion_result =
+      pose_diff::Rotation::AxisAngleToMatrix(rot_vector) -
+      pose_matrix.block<3, 3>(0, 0);
+  std::cout << conversion_result.norm() << "\n";
+
   return 0;
 }

@@ -20,7 +20,7 @@ class State {
 
   Eigen::VectorXd Get6DState() {
     Eigen::VectorXd state_6d(6);
-    Eigen::Vector3d rotationXYZ = Rotation::MatrixToRPY(rotation_matrix_);
+    Eigen::Vector3d rotationXYZ = Rotation::MatrixToAxisAngle(rotation_matrix_);
     state_6d << rotationXYZ, translation_;
     return state_6d;
   };
