@@ -65,8 +65,7 @@ class Rotation {
     double theta = acos((trace - 1.) / 2.);
 
     rot_vector = theta * axis_vector;
-    if (AreApproximatelyEqual((AxisAngleToMatrix(rot_vector) - matrix).norm(),
-                              0., 1e-6)) {
+    if (AreApproximatelyEqual((AxisAngleToMatrix(rot_vector) - matrix).norm(), 0., 1e-6)) {
       return rot_vector;
     }
     return -1. * rot_vector;
@@ -92,8 +91,7 @@ class Rotation {
 
  private:
   static bool IsMatrixValid(const Eigen::Matrix3d& matrix) {
-    if (!(AreApproximatelyEqual(matrix.col(0).norm(), 1.0) &&
-          AreApproximatelyEqual(matrix.col(1).norm(), 1.0) &&
+    if (!(AreApproximatelyEqual(matrix.col(0).norm(), 1.0) && AreApproximatelyEqual(matrix.col(1).norm(), 1.0) &&
           AreApproximatelyEqual(matrix.col(2).norm(), 1.0))) {
       return false;
     }
@@ -105,8 +103,7 @@ class Rotation {
     return true;
   }
 
-  static bool AreApproximatelyEqual(const double& a, const double& b,
-                                    const double& maximum_diff = 1e-9) {
+  static bool AreApproximatelyEqual(const double& a, const double& b, const double& maximum_diff = 1e-9) {
     return abs(a - b) < maximum_diff;
   }
 };
