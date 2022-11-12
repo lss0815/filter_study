@@ -3,6 +3,8 @@ project(pose_diff)
 add_executable(${PROJECT_NAME}
         include/state.h
         include/rotation.h
+        include/transform.h
+        include/matrix.h
         src/main.cpp
         )
 
