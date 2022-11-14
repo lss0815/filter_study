@@ -110,7 +110,7 @@ int main() {
   Eigen::Matrix3d rotation_matrix = transformation_matrix_with_noise_c2_wrt_c1.block<3, 3>(0, 0);
   for (int i = 0; i < kPointNum; i++) {
     // jacobian matrix : [ -skew_symm(R * p) I_3x3]
-    // rotated_point R * p
+    // derivation : https://lss0815.tistory.com/10
     Eigen::Vector3d rotated_point = rotation_matrix * c2_point_list[i];
     jacobian_matrix.block<3, 3>(3 * i, 0) = -pose_diff::Matrix::GetSkewSymmetricMatrix(rotated_point);
     jacobian_matrix.block<3, 3>(3 * i, 3).setIdentity();
