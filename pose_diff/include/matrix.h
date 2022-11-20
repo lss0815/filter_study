@@ -11,6 +11,12 @@ class Matrix {
     skew_symmetric_matrix << 0., -vector(2), vector(1), vector(2), 0., -vector(0), -vector(1), vector(0), 0.;
     return skew_symmetric_matrix;
   }
+
+  static Eigen::MatrixXd GetPseudoInverseMatrix(const Eigen::MatrixXd& matrix) {
+    Eigen::MatrixXd result;
+    result = (matrix.transpose() * matrix).inverse() * matrix.transpose();
+    return result;
+  }
 };
 }  // namespace pose_diff
 

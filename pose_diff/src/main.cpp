@@ -39,8 +39,8 @@ int main() {
   print_vector(state_6d);
   std::cout << "\n\n";
 
-  const double KRotStdDev = 0.05;
-  const double kTransStdDev = 0.1;
+  const double KRotStdDev = 0.5;
+  const double kTransStdDev = 0.3;
   std::default_random_engine random_engine(time(nullptr));
   std::normal_distribution<double> rot_gaussian(0, KRotStdDev);
   std::normal_distribution<double> trans_gaussian(0, kTransStdDev);
@@ -65,7 +65,7 @@ int main() {
   std::cout << "Matrix normalize R - R` (R` from axis-angle)\n";
   std::cout << conversion_result.norm() << "\n\n\n";
 
-  const int kPointNum = 3;
+  const int kPointNum = 20;
   const double kPointPosStdDev = 5.0;
   std::normal_distribution<double> point_pos_gaussian(0, kPointPosStdDev);
   std::vector<Eigen::Vector3d> c1_point_list(kPointNum);
@@ -98,12 +98,15 @@ int main() {
   Eigen::Matrix4d transformation_matrix_with_noise_c2_wrt_c1 =
       state_diff_with_noise_c2_wrt_c1.GetTransformationMatrix();
   for (int i = 0; i < kPointNum; i++) {
+    // e = Rp' + t - p
     error_vector.segment<3>(3 * i) =
         pose_diff::Transform::Transform3DPoint(transformation_matrix_with_noise_c2_wrt_c1, c2_point_list[0]) -
         c1_point_list[0];
   }
   std::cout << "Error vector\n";
   print_vector(error_vector);
+  std::cout << "Error vector mean\n";
+  std::cout << error_vector.mean();
   std::cout << "\n\n";
 
   Eigen::MatrixXd jacobian_matrix(3 * kPointNum, 6);
@@ -115,7 +118,29 @@ int main() {
     jacobian_matrix.block<3, 3>(3 * i, 0) = -pose_diff::Matrix::GetSkewSymmetricMatrix(rotated_point);
     jacobian_matrix.block<3, 3>(3 * i, 3).setIdentity();
   }
+  std::cout << "0th iter jacobian\n";
   print_matrix(jacobian_matrix);
+  std::cout << "\n\n";
+
+  // e(x + dx) (\approx) e + H dx = 0
+  // dx = - H.inv e
+  Eigen::VectorXd state_diff = -pose_diff::Matrix::GetPseudoInverseMatrix(jacobian_matrix) * error_vector;
+  Eigen::VectorXd current_state = state_diff_with_noise_c2_wrt_c1.Get6DState();
+  Eigen::VectorXd next_state = current_state + state_diff;
+  next_state.head(3) =
+      pose_diff::Rotation::MatrixToAxisAngle(pose_diff::Rotation::AxisAngleToMatrix(current_state.head(3)) *
+                                             pose_diff::Rotation::AxisAngleToMatrix(state_diff.head(3)));
+  Eigen::Matrix4d transformation_matrix = pose_diff::State(next_state).GetTransformationMatrix();
+  for (int i = 0; i < kPointNum; i++) {
+    // e = Rp' + t - p
+    error_vector.segment<3>(3 * i) =
+        pose_diff::Transform::Transform3DPoint(transformation_matrix, c2_point_list[0]) - c1_point_list[0];
+  }
+  std::cout << "Iter 1\n";
+  std::cout << "Error vector\n";
+  print_vector(error_vector);
+  std::cout << "Error vector mean\n";
+  std::cout << error_vector.mean();
   std::cout << "\n\n";
 
   return 0;
