@@ -143,6 +143,8 @@ int main() {
           pose_diff::Transform::Transform3DPoint(transformation_matrix, c2_point_list[i]) - c1_point_list[i];
     }
     std::cout << "Iter " << iter_count << "\n";
+    std::cout << "dx vector\n";
+    print_vector(state_diff);
     std::cout << "Error vector\n";
     print_vector(error_vector);
     std::cout << "Error vector norm\n";
@@ -150,9 +152,19 @@ int main() {
     std::cout << "\n\n";
 
     double error_norm = error_vector.norm();
-    if (error_norm < kInitialErrorNorm * 1e-7 || error_norm < 1e-6) {
+    // todo: Fix divergence
+    if (error_norm < kInitialErrorNorm * 1e-9 || error_norm < 1e-9) {
       std::cout << "Succeeded to optimize. error: " << error_norm << ", initial error:" << kInitialErrorNorm << "\n";
       break;
+    }
+
+    rotation_matrix = pose_diff::Rotation::AxisAngleToMatrix(next_state.head(3));
+    for (int i = 0; i < kPointNum; i++) {
+      // jacobian matrix : [ -skew_symm(R * p) I_3x3]
+      // derivation : https://lss0815.tistory.com/10
+      Eigen::Vector3d rotated_point = rotation_matrix * c2_point_list[i];
+      jacobian_matrix.block<3, 3>(3 * i, 0) = -pose_diff::Matrix::GetSkewSymmetricMatrix(rotated_point);
+      jacobian_matrix.block<3, 3>(3 * i, 3).setIdentity();
     }
 
     current_state = next_state;
