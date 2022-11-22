@@ -125,6 +125,7 @@ int main() {
 
   // e(x + dx) (\approx) e + H dx = 0
   // dx = - H.inv e
+  // derivation: https://lss0815.tistory.com/12
   Eigen::VectorXd current_state = state_diff_with_noise_c2_wrt_c1.Get6DState();
   const double kInitialErrorNorm = error_vector.norm();
   const int kMaxIter = 100;
@@ -144,7 +145,7 @@ int main() {
     std::cout << "Iter " << iter_count << "\n";
     std::cout << "Error vector\n";
     print_vector(error_vector);
-    std::cout << "Error vector mean\n";
+    std::cout << "Error vector norm\n";
     std::cout << error_vector.norm();
     std::cout << "\n\n";
 
