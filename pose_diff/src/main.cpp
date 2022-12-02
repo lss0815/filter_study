@@ -131,20 +131,24 @@ int main() {
   const int kMaxIter = 100;
   int iter_count = 0;
   while (iter_count++ < kMaxIter) {
+    std::cout << "Iter " << iter_count << "\n";
     Eigen::VectorXd state_diff = -pose_diff::Matrix::GetPseudoInverseMatrix(jacobian_matrix) * error_vector;
+    std::cout << "current state\n";
+    print_vector(current_state);
+    std::cout << "dx vector\n";
+    print_vector(state_diff);
     Eigen::VectorXd next_state = current_state + state_diff;
     next_state.head(3) =
         pose_diff::Rotation::MatrixToAxisAngle(pose_diff::Rotation::AxisAngleToMatrix(state_diff.head(3)) *
                                                pose_diff::Rotation::AxisAngleToMatrix(current_state.head(3)));
+    std::cout << "next state\n";
+    print_vector(next_state);
     Eigen::Matrix4d transformation_matrix = pose_diff::State(next_state).GetTransformationMatrix();
     for (int i = 0; i < kPointNum; i++) {
       // e = Rp' + t - p
       error_vector.segment<3>(3 * i) =
           pose_diff::Transform::Transform3DPoint(transformation_matrix, c2_point_list[i]) - c1_point_list[i];
     }
-    std::cout << "Iter " << iter_count << "\n";
-    std::cout << "dx vector\n";
-    print_vector(state_diff);
     std::cout << "Error vector\n";
     print_vector(error_vector);
     std::cout << "Error vector norm\n";
@@ -152,8 +156,7 @@ int main() {
     std::cout << "\n\n";
 
     double error_norm = error_vector.norm();
-    // todo: Fix divergence
-    if (error_norm < kInitialErrorNorm * 1e-9 || error_norm < 1e-9) {
+    if (error_norm < kInitialErrorNorm * 1e-10 || error_norm < 1e-10) {
       std::cout << "Succeeded to optimize. error: " << error_norm << ", initial error:" << kInitialErrorNorm << "\n";
       break;
     }

@@ -40,7 +40,8 @@ class Rotation {
       return rot_vector;
     }
     Eigen::Vector3d axis_vector;
-    if (matrix == matrix.transpose()) {
+    if (AreApproximatelyEqual(matrix(0, 1), matrix(1, 0)) && AreApproximatelyEqual(matrix(0, 2), matrix(2, 0)) &&
+        AreApproximatelyEqual(matrix(1, 2), matrix(2, 1))) {
       Eigen::EigenSolver<Eigen::Matrix3d> eigen_solver(matrix);
       Eigen::Vector3cd eigen_value = eigen_solver.eigenvalues();
       for (int i = 0; i < 3; i++) {
