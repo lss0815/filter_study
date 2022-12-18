@@ -1,11 +1,15 @@
 project(pose_diff)
 
 add_executable(${PROJECT_NAME}
-        include/state.h
-        include/rotation.h
-        include/transform.h
-        include/matrix.h
+        include/core/state.h
+        include/core/rotation.h
+        include/core/transform.h
+        include/core/matrix.h
+        include/point_to_point_icp.h
+        include/point_to_plane_icp.h
         src/main.cpp
+        src/point_to_point_icp.cpp
+        src/point_to_plane_icp.cpp
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

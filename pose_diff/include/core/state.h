@@ -3,8 +3,8 @@
 
 #include <Eigen/Core>
 
-#include "pose_diff/include/rotation.h"
-#include "pose_diff/include/transform.h"
+#include "rotation.h"
+#include "transform.h"
 
 namespace pose_diff {
 class State {
